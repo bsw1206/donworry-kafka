@@ -37,7 +37,7 @@ jobs:
             ./venv/bin/pip install -r requirements.txt
             
             # 5. 가상환경 안의 python으로 '직접' 마이그레이션
-            ./venv/bin/python manage.py migratescript: |
+            ./venv/bin/python manage.py migrate
             # 1. 프로젝트 폴더로 이동
             cd /home/ubuntu/donworry-kafka
             
