@@ -20,15 +20,15 @@ jobs:
           # deploy.yml의 script 부분
           # ... 생략 (host, username, key 설정 부분은 그대로 두세요)
           script: |
-            # 1. 실제 서버에 있는 폴더명으로 이동 (매우 중요)
             cd /home/ubuntu/donworry-kafka
             
-            # 2. 브랜치명을 master로 수정하여 코드 가져오기
-            git pull origin master
+            # 1. 원격의 최신 정보를 가져옴
+            git fetch --all
             
-            # 3. 가상환경 활성화 (venv가 밖에 있으므로 ../venv)
+            # 2. 로컬의 변경사항을 무시하고 GitHub의 master 브랜치 상태로 강제 리셋 (강력 추천)
+            git reset --hard origin/master
+            
+            # 3. 가상환경 활성화 및 배포 작업
             source ../venv/bin/activate
-            
-            # 4. 패키지 설치 및 DB 반영 (python3, pip3 권장)
             pip install -r requirements.txt
             python manage.py migrate
