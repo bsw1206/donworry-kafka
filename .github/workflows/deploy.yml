@@ -27,12 +27,32 @@ jobs:
             git fetch --all
             git reset --hard origin/master
             
-            # 3. 가상환경의 pip를 직접 사용하여 패키지 설치
-            # (가상환경이 /home/ubuntu/venv 에 있다고 가정)
-            /home/ubuntu/venv/bin/pip install -r requirements.txt
+            # 3. 가상환경이 없으면 새로 생성 (프로젝트 폴더 내부에)
+            if [ ! -d "venv" ]; then
+                python3 -m venv venv
+            fi
             
-            # 4. 가상환경의 python을 직접 사용하여 DB 반영
-            /home/ubuntu/venv/bin/python manage.py migrate
+            # 4. 가상환경 안의 pip로 '직접' 설치 (매우 중요)
+            ./venv/bin/pip install --upgrade pip
+            ./venv/bin/pip install -r requirements.txt
             
-            # 5. (선택사항) 서버가 잘 떠있는지 확인하기 위해 정적 파일 모으기
-            /home/ubuntu/venv/bin/python manage.py collectstatic --noinput
+            # 5. 가상환경 안의 python으로 '직접' 마이그레이션
+            ./venv/bin/python manage.py migratescript: |
+            # 1. 프로젝트 폴더로 이동
+            cd /home/ubuntu/donworry-kafka
+            
+            # 2. GitHub 최신 상태로 강제 동기화
+            git fetch --all
+            git reset --hard origin/master
+            
+            # 3. 가상환경이 없으면 새로 생성 (프로젝트 폴더 내부에)
+            if [ ! -d "venv" ]; then
+                python3 -m venv venv
+            fi
+            
+            # 4. 가상환경 안의 pip로 '직접' 설치 (매우 중요)
+            ./venv/bin/pip install --upgrade pip
+            ./venv/bin/pip install -r requirements.txt
+            
+            # 5. 가상환경 안의 python으로 '직접' 마이그레이션
+            ./venv/bin/python manage.py migrate
