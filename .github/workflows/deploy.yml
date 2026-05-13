@@ -1,6 +1,5 @@
 name: Django EC2 Deploy
 
-# main 브랜치에 push가 발생할 때 실행
 on:
   push:
     branches:
@@ -17,8 +16,6 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          # deploy.yml의 script 부분
-          # ... 생략 (host, username, key 설정 부분은 그대로 두세요)
           script: |
             # 1. 프로젝트 폴더로 이동
             cd /home/ubuntu/donworry-kafka
@@ -32,27 +29,12 @@ jobs:
                 python3 -m venv venv
             fi
             
-            # 4. 가상환경 안의 pip로 '직접' 설치 (매우 중요)
+            # 4. 가상환경 안의 pip로 패키지 설치
             ./venv/bin/pip install --upgrade pip
             ./venv/bin/pip install -r requirements.txt
             
-            # 5. 가상환경 안의 python으로 '직접' 마이그레이션
-            ./venv/bin/python manage.py migrate
-            # 1. 프로젝트 폴더로 이동
-            cd /home/ubuntu/donworry-kafka
-            
-            # 2. GitHub 최신 상태로 강제 동기화
-            git fetch --all
-            git reset --hard origin/master
-            
-            # 3. 가상환경이 없으면 새로 생성 (프로젝트 폴더 내부에)
-            if [ ! -d "venv" ]; then
-                python3 -m venv venv
-            fi
-            
-            # 4. 가상환경 안의 pip로 '직접' 설치 (매우 중요)
-            ./venv/bin/pip install --upgrade pip
-            ./venv/bin/pip install -r requirements.txt
+            # 🎯 [치트키] 명단에 누락되었을 경우를 대비해 에러 났던 패키지들 강제 설치!
+            ./venv/bin/pip install Pillow python-dotenv
             
             # 5. 가상환경 안의 python으로 '직접' 마이그레이션
             ./venv/bin/python manage.py migrate
