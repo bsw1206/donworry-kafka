@@ -20,15 +20,19 @@ jobs:
           # deploy.yml의 script 부분
           # ... 생략 (host, username, key 설정 부분은 그대로 두세요)
           script: |
+            # 1. 프로젝트 폴더로 이동
             cd /home/ubuntu/donworry-kafka
             
-            # 1. 원격의 최신 정보를 가져옴
+            # 2. GitHub 최신 상태로 강제 동기화
             git fetch --all
-            
-            # 2. 로컬의 변경사항을 무시하고 GitHub의 master 브랜치 상태로 강제 리셋 (강력 추천)
             git reset --hard origin/master
             
-            # 3. 가상환경 활성화 및 배포 작업
-            source ../venv/bin/activate
-            pip install -r requirements.txt
-            python manage.py migrate
+            # 3. 가상환경의 pip를 직접 사용하여 패키지 설치
+            # (가상환경이 /home/ubuntu/venv 에 있다고 가정)
+            /home/ubuntu/venv/bin/pip install -r requirements.txt
+            
+            # 4. 가상환경의 python을 직접 사용하여 DB 반영
+            /home/ubuntu/venv/bin/python manage.py migrate
+            
+            # 5. (선택사항) 서버가 잘 떠있는지 확인하기 위해 정적 파일 모으기
+            /home/ubuntu/venv/bin/python manage.py collectstatic --noinput
