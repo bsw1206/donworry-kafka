@@ -29,9 +29,9 @@ SECRET_KEY = 'django-insecure-9l^_s5ov=&u48r5#lca#v(sih2jwykfkw659(qqpp(koy4#y!t
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+#############################################################
 ALLOWED_HOSTS = ['15.165.238.176', 'localhost', '127.0.0.1']
-
+#############################################################
 AUTH_USER_MODEL = 'accounts.User'
 
 #############################################################
@@ -41,6 +41,7 @@ FINLIFE_API_KEY = os.getenv('FINLIFE_API_KEY')
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
     'accounts',
     'products',
     'survey',
