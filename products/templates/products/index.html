@@ -117,5 +117,39 @@
         location.reload();
         }, 3000);
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <div style="width: 400px; height: 300px;">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [], // 시간축
+                datasets: [{
+                    label: '삼성전자 실시간 주가',
+                    data: [], // 가격 데이터
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            }
+        });
+
+        // 3초마다 데이터를 가져와 차트를 업데이트하는 함수
+        function updateChart() {
+            fetch('/api/stock-chart-data/') // 위에서 만든 API 주소
+                .then(res => res.json())
+                .then(data => {
+                    myChart.data.labels = data.labels;
+                    myChart.data.datasets[0].data = data.prices;
+                    myChart.update();
+                });
+        }
+
+        setInterval(updateChart, 3000); // 3초 주기 실행
+    </script>
 </body>
 </html>

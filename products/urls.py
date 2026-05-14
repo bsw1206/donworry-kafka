@@ -1,13 +1,16 @@
+from django.contrib import admin
+from django.urls import path, include
+from products import views
+
 # products/urls.py
-from django.urls import path
-from . import views
-
 urlpatterns = [
-    # 데이터 수집용: http://127.0.0.1:8000/api/products/save/
-    path('products/save/', views.save_deposit_products),
-    
-    # 목록 조회용: http://127.0.0.1:8000/api/products/
-    path('products/', views.ProductListView.as_view()),
+    # 기존: path('products/save/', ...) -> 접속: /api/products/save/
+    path('save/', views.save_deposit_products), 
 
-    path('products/api/stock-chart-data/', views.stock_chart_data, name='stock_chart_data'),
+    # 기존: path('products/', ...) -> 접속: /api/products/
+    path('', views.ProductListView.as_view()),
+
+    # ✨ 차트 데이터 경로 (깔끔하게!)
+    # 이제 접속 주소는: /api/stock-chart-data/ 가 됩니다.
+    path('stock-chart-data/', views.stock_chart_data, name='stock_chart_data'),
 ]
