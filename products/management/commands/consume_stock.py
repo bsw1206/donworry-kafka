@@ -1,7 +1,7 @@
 import json
 from django.core.management.base import BaseCommand
 from kafka import KafkaConsumer
-from products.models import Stock
+from products.models import Stock, StockHistory
 class Command(BaseCommand):
     help = 'Kafka에서 주식 데이터를 가져옵니다.'
 
@@ -19,18 +19,40 @@ class Command(BaseCommand):
 
         for message in consumer:
             data = message.value
-            # 🎯 여기서 가져온 데이터를 DB에 저장하거나 가공하면 됩니다!
-            self.stdout.write(self.style.SUCCESS(f"받은 데이터: {data}"))
-
-            stock_obj, created = Stock.objects.update_or_create(
-                code="005930", # 삼성전자 코드
-                defaults={
-                    "name": data.get("name"),
-                    "current_price": data.get("price"),
-                    "change": data.get("change"),
-                }
-            )
+            stock_code = "005930"
+            # 🎯 1. 데이터 타입 정제 (문자열 -> 정수)
+            current_price = int(data.get("price", 0)) 
             
+            # 🎯 2. 기존 가격과 비교하기 (최적화)
+            # DB에서 현재 저장된 삼성전자의 정보를 가져옵니다.
+            try:
+                stock_obj = Stock.objects.get(code=stock_code)
+                last_price = stock_obj.current_price
+            except Stock.DoesNotExist:
+                stock_obj = None
+                last_price = None
+
+            # 🎯 3. 가격이 변했을 때만 동작!
+            if stock_obj is None or last_price != current_price:
+                # Stock 테이블 업데이트 또는 생성
+                stock_obj, created = Stock.objects.update_or_create(
+                    code=stock_code,
+                    defaults={
+                        "name": data.get("name"),
+                        "current_price": current_price,
+                        "change": data.get("change"),
+                    }
+                )
+                
+                # 가격이 변했으니 이력(History)에도 남깁니다.
+                StockHistory.objects.create(
+                    stock=stock_obj,
+                    price=current_price
+                )
+                self.stdout.write(self.style.SUCCESS(f"📢 가격 변동 감지! 갱신 완료: {current_price}원"))
+            else:
+                # 가격이 그대로면 로그만 살짝 찍고 패스!
+                self.stdout.write(f"😴 가격 변동 없음 ({current_price}원). 기록을 건너뜁니다.")
             if created:
                 self.stdout.write(self.style.SUCCESS(f"새 종목 등록: {stock_obj.name}"))
             else:

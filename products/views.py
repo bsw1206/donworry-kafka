@@ -66,7 +66,7 @@ def index(request):
 
 # products/views.py
 from django.shortcuts import render
-from .models import Stock
+from .models import Stock, StockHistory
 
 def product_list(request):
     # DB에서 삼성전자 데이터를 가져옵니다.
@@ -81,3 +81,15 @@ def product_list(request):
         # 기존에 팀원이 넘겨주던 데이터들...
     }
     return render(request, 'products/product_list.html', context)
+
+# products/views.py
+from django.http import JsonResponse
+
+def stock_chart_data(request):
+    # 최근 20개의 가격 데이터를 가져옵니다.
+    histories = StockHistory.objects.filter(stock__code='005930').order_by('-created_at')[:20]
+    data = {
+        "labels": [h.created_at.strftime('%H:%M:%S') for h in reversed(histories)],
+        "prices": [h.price for h in reversed(histories)],
+    }
+    return JsonResponse(data)

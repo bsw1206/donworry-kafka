@@ -29,3 +29,13 @@ class Stock(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.code})"
+    
+
+# products/models.py
+class StockHistory(models.Model):
+    stock = models.ForeignKey(Stock, on_delete=models.CASCADE, related_name='histories')
+    price = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True) # 저장된 시간
+
+    class Meta:
+        ordering = ['created_at']
