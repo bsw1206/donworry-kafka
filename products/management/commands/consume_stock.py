@@ -33,7 +33,10 @@ class Command(BaseCommand):
                 last_price = None
 
             # 🎯 3. 가격이 변했을 때만 동작!
-            if stock_obj is None or last_price != current_price:
+            #######################################################################
+            # if stock_obj is None or last_price != current_price:
+            if True: # 가격이 변하던말던 
+            #######################################################################
                 # Stock 테이블 업데이트 또는 생성
                 stock_obj, created = Stock.objects.update_or_create(
                     code=stock_code,
