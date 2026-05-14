@@ -49,7 +49,7 @@ class Command(BaseCommand):
             while True:
                 res = requests.get(url, headers=headers, params=params)
                 data = res.json()
-                
+                print("🚀 API 응답 원본:", data)
                 # 필요한 정보만 파싱 (현재가, 종목명 등)
                 output = data.get('output', {})
                 stock_info = {
