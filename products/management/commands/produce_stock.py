@@ -5,7 +5,8 @@ from django.core.management.base import BaseCommand
 from kafka import KafkaProducer
 import requests  # 한국투자증권 API 호출용
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 def get_access_token():
     """한국투자증권 Access Token 발급"""
     url = "https://openapivts.koreainvestment.com:29443/oauth2/tokenP" # 모의투자용 URL
