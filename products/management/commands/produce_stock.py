@@ -57,19 +57,27 @@ class Command(BaseCommand):
             while True:
                 res = requests.get(url, headers=headers, params=params)
                 data = res.json()
-                print("🚀 API 응답 원본:", data)
-                # 필요한 정보만 파싱 (현재가, 종목명 등)
-                output = data.get('output', {})
-                stock_info = {
-                    "name": "삼성전자",
-                    "price": output.get('stck_prpr'), # 현재가
-                    "change": output.get('prdy_vrss'), # 전일 대비
-                    "timestamp": time.time()
-                }
-
-                producer.send('stock-data', value=stock_info)
-                self.stdout.write(f"Kafka 전송 완료: {stock_info['price']}원")
                 
-                time.sleep(2) # API 호출 제한을 고려해 2초 간격
+                # 🎯 1. 데이터에 'output'(가격 정보)이 무사히 들어있을 때만 실행!
+                if 'output' in data and data['output']:
+                    output = data['output']
+                    stock_info = {
+                        "name": "삼성전자",
+                        "price": output.get('stck_prpr'),
+                        "change": output.get('prdy_vrss'),
+                        "timestamp": time.time()
+                    }
+
+                    # 정상 데이터만 카프카로 전송
+                    producer.send('stock-data', value=stock_info)
+                    self.stdout.write(f"✅ 정상 전송: {stock_info['price']}원")
+                
+                # 🎯 2. API가 튕겨냈을 때 (가격 정보가 없을 때)
+                else:
+                    error_msg = data.get('msg1', '알 수 없는 에러')
+                    self.stdout.write(self.style.WARNING(f"⚠️ API 차단됨 (1회 건너뜀): {error_msg}"))
+
+                # 🎯 3. API 호출 제한에 안 걸리도록 쉬는 시간 늘리기 (2초 -> 3초 이상 권장)
+                time.sleep(3)
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"에러 발생: {e}"))
