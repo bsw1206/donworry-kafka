@@ -49,11 +49,11 @@ class Command(BaseCommand):
                     stock=stock_obj,
                     price=current_price
                 )
-                self.stdout.write(self.style.SUCCESS(f"📢 가격 변동 감지! 갱신 완료: {current_price}원"))
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f"📢 새 종목 등록: {stock_obj.name}"))
+                else:
+                    self.stdout.write(self.style.SUCCESS(f"🔄 가격 변동 감지! 갱신 완료: {current_price}원"))
+            
+            # 🎯 2. 가격이 그대로일 때 실행되는 구역
             else:
-                # 가격이 그대로면 로그만 살짝 찍고 패스!
                 self.stdout.write(f"😴 가격 변동 없음 ({current_price}원). 기록을 건너뜁니다.")
-            if created:
-                self.stdout.write(self.style.SUCCESS(f"새 종목 등록: {stock_obj.name}"))
-            else:
-                self.stdout.write(self.style.SUCCESS(f"가격 갱신 완료: {stock_obj.current_price}원"))
