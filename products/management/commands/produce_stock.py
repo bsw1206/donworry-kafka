@@ -28,7 +28,7 @@ class Command(BaseCommand):
         
         # Kafka Producer 설정
         producer = KafkaProducer(
-            bootstrap_servers=['15.165.238.176:9092'], # 본인 EC2 IP
+            bootstrap_servers=['127.0.0.1:9092'], # 본인 EC2 IP
             value_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
 
