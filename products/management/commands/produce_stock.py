@@ -8,6 +8,13 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 def get_access_token():
+
+    app_key = os.getenv("KIS_MOCK_APP_KEY")
+    app_secret = os.getenv("KIS_MOCK_APP_SECRET")
+    
+    # 🎯 [디버깅] 키가 제대로 불려왔는지 첫 5글자만 찍어보기!
+    print(f"🔑 앱 키 확인: {str(app_key)[:5]}***") 
+    print(f"🔑 시크릿 키 확인: {str(app_secret)[:5]}***")
     """한국투자증권 Access Token 발급"""
     url = "https://openapivts.koreainvestment.com:29443/oauth2/tokenP" # 모의투자용 URL
     headers = {"content-type": "application/json"}
