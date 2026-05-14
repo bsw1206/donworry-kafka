@@ -50,4 +50,34 @@ class ProductListView(generics.ListAPIView):
 from django.shortcuts import render
 
 def index(request):
-    return render(request, 'index.html')
+    # 1. DB에서 삼성전자 데이터 꺼내오기
+    try:
+        samsung_stock = Stock.objects.get(code='005930')
+    except Stock.DoesNotExist:
+        samsung_stock = None
+
+    # 2. HTML로 넘겨줄 보따리(context)에 담기
+    context = {
+        'samsung_stock': samsung_stock, 
+    }
+    
+    # 3. 보따리 들고 index.html로 출발!
+    return render(request, 'products/index.html', context)
+
+# products/views.py
+from django.shortcuts import render
+from .models import Stock
+
+def product_list(request):
+    # DB에서 삼성전자 데이터를 가져옵니다.
+    # 만약 아직 데이터가 없을 경우를 대비해 None 처리를 해줍니다.
+    try:
+        samsung_stock = Stock.objects.get(code='005930')
+    except Stock.DoesNotExist:
+        samsung_stock = None
+
+    context = {
+        'samsung_stock': samsung_stock,
+        # 기존에 팀원이 넘겨주던 데이터들...
+    }
+    return render(request, 'products/product_list.html', context)

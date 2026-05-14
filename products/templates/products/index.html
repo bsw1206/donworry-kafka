@@ -39,7 +39,17 @@
             <div id="top-products" class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 </div>
         </section>
-
+    <div class="stock-widget">
+        <h3>실시간 금융 정보</h3>
+        {% if samsung_stock %}
+            <p>종목: {{ samsung_stock.name }}</p>
+            <p>현재가: <strong>{{ samsung_stock.current_price }}원</strong></p>
+            <p>변동폭: {{ samsung_stock.change }}</p>
+            <small>마지막 갱신: {{ samsung_stock.updated_at|date:"H:i:s" }}</small>
+        {% else %}
+            <p>데이터 수집 중입니다...</p>
+        {% endif %}
+    </div>
         <section>
             <h2 class="text-2xl font-bold mb-6">전체 상품 둘러보기</h2>
             <div id="product-list" class="grid grid-cols-1 gap-4">
@@ -103,6 +113,9 @@
         }
 
         loadProducts();
+        setTimeout(function(){
+        location.reload();
+        }, 3000);
     </script>
 </body>
 </html>
